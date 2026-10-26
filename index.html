@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Happy Hills Homicide 2: Out For Blood</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;background:#000;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh}
+  #start{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:#ddd;font:20px monospace;cursor:pointer;z-index:5;text-align:center;line-height:1.6}
+  #start small{color:#999;font-size:14px}
+  #pad{display:none;position:fixed;left:0;right:0;bottom:0;height:36vh;z-index:3;pointer-events:none;touch-action:none}
+  body.touch #pad{display:block}
+  .b{position:absolute;pointer-events:auto;width:15vmin;height:15vmin;max-width:86px;max-height:86px;border-radius:50%;background:rgba(255,255,255,.17);border:2px solid rgba(255,255,255,.38);color:#fff;font:bold 20px monospace;display:flex;align-items:center;justify-content:center;touch-action:none}
+  .b.on{background:rgba(255,255,255,.45)}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c" width="512" height="288"></canvas></div>
+<div id="pad">
+  <div class="b" data-k="37" style="left:2vw;bottom:6vh">&#9664;</div>
+  <div class="b" data-k="39" style="left:21vw;bottom:6vh">&#9654;</div>
+  <div class="b" data-k="38" style="left:11.5vw;bottom:18vh">&#9650;</div>
+  <div class="b" data-k="40" style="left:11.5vw;bottom:-4vh">&#9660;</div>
+  <div class="b" data-k="69" style="right:3vw;bottom:14vh">E</div>
+  <div class="b" data-k="70" style="right:20vw;bottom:6vh">F</div>
+  <div class="b" data-k="13" style="right:20vw;bottom:22vh;font-size:15px">OK</div>
+  <div class="b" data-k="32" style="right:3vw;bottom:-2vh;font-size:15px">SPC</div>
+  <div class="b" data-k="27" style="right:3vw;top:-30vh;width:10vmin;height:10vmin;font-size:14px">ESC</div>
+</div>
+<div id="start">Click, tap or press any key to start<br><small>Arrow keys to move &middot; E to interact &middot; Enter / Space to confirm &middot; Esc to go back</small></div>
+<script src="game.js"></script>
+<script src="engine.js"></script>
+<script>
+  let started = false;
+  function go() {
+    if (started) return; started = true;
+    document.getElementById('start').remove();
+    HH.start(); setTimeout(() => HH.fit(), 60);
+  }
+  document.getElementById('start').addEventListener('click', go);
+  window.addEventListener('keydown', go);
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    document.body.classList.add('touch');
+    document.querySelectorAll('#pad .b').forEach(b => {
+      const k = +b.dataset.k;
+      const dn = e => { e.preventDefault(); b.classList.add('on'); go(); HH.key(k, true); };
+      const up = e => { e.preventDefault(); b.classList.remove('on'); HH.key(k, false); };
+      b.addEventListener('pointerdown', dn); b.addEventListener('pointerup', up);
+      b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', up);
+    });
+    document.getElementById('start').addEventListener('touchstart', go, { passive: true });
+  }
+</script>
+</body>
+</html>
